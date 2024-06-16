@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from openai import OpenAI
 import config
 
@@ -11,7 +11,19 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello, World!"
+    return render_template("index.html")
+
+@app.route("/get")
+def get_bot_response():
+    userText = request.args.get('msg')
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role":"user", "content":userText}
+        ]
+    )
+    answer = response.choices[0].message.content
+    return str(answer)
 
 @app.route("/chat", methods=["POST"])
 def chat():
